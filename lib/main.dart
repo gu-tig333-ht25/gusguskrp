@@ -1,28 +1,52 @@
 import 'package:flutter/material.dart';
+import 'add_view.dart';
+import 'todo_item.dart';
+import 'popup_menu.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'TODO APP',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        // Base colors
+        scaffoldBackgroundColor: Colors.white, // background of pages
+        primaryColor: Colors.grey, // general primary color
+        colorScheme: const ColorScheme.light(
+          primary: Colors.grey, // AppBar and primary elements
+          onPrimary: Colors.grey, // text/icons on primary elements
+          secondary: Colors.black, // accents, buttons
+        ),
+
+        // AppBar theme
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.grey, // gray banner
+          foregroundColor: Colors.black, // black title & icons
+          centerTitle: true,
+        ),
+
+        // FloatingActionButton theme
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.grey, // black FAB
+          foregroundColor: Colors.white,
+          iconSize: 50,
+          shape: CircleBorder(),
+        ),
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'TIG3333 TODO'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({super.key, required this.title});
-
+  const MyHomePage({super.key, required this.title});
   final String title;
 
   @override
@@ -30,37 +54,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final List<String> items = List.generate(20, (index) => "Item nr $index");
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.headlineLarge,
+        ),
+        actions: [
+          PopupMenu()
+    ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.separated(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return TodoItem(text: items[index], done: index % 2 == 0);  //Temporary done value to show the two states
+          },
+          separatorBuilder: (context, index) =>
+              const Divider(color: Colors.grey, thickness: 1),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.large(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddView(widget.title)),
+        ),
+        tooltip: 'Add a TODO',
+        child: const Icon(Icons.add),
       ),
     );
   }
