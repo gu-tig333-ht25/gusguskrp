@@ -6,8 +6,8 @@ import 'home_page.dart';
 void main() {
   TodoItemsState state = TodoItemsState();
 
-  for (var element in List.generate(20, (index) => "Item nr $index")) {
-    state.add(TodoItem(element));
+  for (int i = 0; i < 10; i++) {
+    state.add(TodoItem("Item nr $i", done: (i % 2 == 0)));
   }
 
   runApp(ChangeNotifierProvider(create: (_) => state, child: MyApp()));

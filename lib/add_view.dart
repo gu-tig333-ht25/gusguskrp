@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 
 class AddView extends StatelessWidget {
   final String title;
-
-  AddView(this.title, {super.key});
-  final TextEditingController controller = TextEditingController();
+  String textFieldtext;
+  AddView(this.title, {super.key, this.textFieldtext = ""})
+    : controller = TextEditingController(text: textFieldtext);
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
