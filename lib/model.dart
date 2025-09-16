@@ -17,8 +17,20 @@ class TodoItem extends ChangeNotifier{
   }
 }
 
+enum Filters {all, done, undone}
+
 class TodoItemsState extends ChangeNotifier {
   final List<TodoItem> _items = [];
+
+  Filters _current_filter = Filters.values.first;
+
+  Filters get current_filter => _current_filter;
+
+  set current_filter(Filters filter){
+    _current_filter = filter;
+    notifyListeners();
+  }
+
   int get length => _items.length;
 
   void add(TodoItem item) {
@@ -31,10 +43,6 @@ class TodoItemsState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeAt(int index) {
-    _items.removeAt(index);
-    notifyListeners();
-  }
 
   TodoItem getItem(int index) {
     return _items[index];
