@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'add_view.dart';
 import 'todo_item.dart';
 import 'popup_menu.dart';
 import 'model.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class MyHomePage extends StatelessWidget {
+  MyHomePage({super.key, required this.title});
   final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final List<String> items = List.generate(20, (index) => "Item nr $index");
+  
 
   @override
   Widget build(BuildContext context) {
+    TodoItemsState items = context.watch<TodoItemsState>();
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.title,
+          title,
           style: Theme.of(context).textTheme.headlineLarge,
         ),
         actions: [
@@ -32,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView.separated(
           itemCount: items.length,
           itemBuilder: (context, index) {
-            return TodoItemWidget(TodoItem(items[index], done: index % 2 == 0));  //Temporary done value to show the two states
+            return TodoItemWidget(items[index]); 
           },
           separatorBuilder: (context, index) =>
               const Divider(color: Colors.grey, thickness: 1),
@@ -41,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton.large(
         onPressed: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AddView(widget.title)),
+          MaterialPageRoute(builder: (context) => AddView(title)),
         ),
         tooltip: 'Add a TODO',
         child: const Icon(Icons.add),

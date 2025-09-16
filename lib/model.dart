@@ -1,25 +1,38 @@
+import 'package:flutter/material.dart';
 //Imutable with safe copy todo item
 class TodoItem{
   final bool _done;
   final String _text;
-  TodoItem(String text, {bool done = false}): this._text = "$text", _done = done;
+  // ignore: unnecessary_string_interpolations
+  TodoItem(String text, {bool done = false}): _text = "$text", _done = done;
   bool get done => _done;
+  // ignore: unnecessary_string_interpolations
   String get text => "$_text";
 }
 
-class TodoItemsState{
-  final List<TodoItem> items = const [];
-  int get length => items.length;
+class TodoItemsState extends ChangeNotifier{
+  final List<TodoItem> _items = [];
+  int get length => _items.length;
 
   void add(TodoItem item){
-    items.add(item);
-  }
-  void remove(int index){
-    items.remove(index);
+    _items.add(item);
+    notifyListeners();
+  } 
+
+  void remove(TodoItem item){
+    _items.remove(item);
+    notifyListeners();
   }
 
-  TodoItem get_item(int index){
-    return items[index];
+  void removeAt(int index){
+    _items.removeAt(index);
+    notifyListeners();
   }
 
+  TodoItem getItem(int index){
+    return _items[index];
+  }
+
+  TodoItem operator [](int index) => _items[index];
 }
+

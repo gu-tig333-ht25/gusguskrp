@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'add_view.dart';
-import 'todo_item.dart';
-import 'popup_menu.dart';
+import 'package:provider/provider.dart';
 import 'model.dart';
 import 'home_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  TodoItemsState state = TodoItemsState();
+
+  for (var element in List.generate(20, (index) => "Item nr $index")) {
+    state.add(TodoItem(element));
+  }
+
+  runApp(ChangeNotifierProvider(create: (_) => state, child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -42,7 +46,7 @@ class MyApp extends StatelessWidget {
           shape: CircleBorder(),
         ),
       ),
-      home: const MyHomePage(title: 'TIG333 TODO'),
+      home: MyHomePage(title: 'TIG333 TODO'),
     );
   }
 }
