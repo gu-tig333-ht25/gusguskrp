@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'add_view.dart';
 import 'todo_item.dart';
 import 'popup_menu.dart';
+import 'model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -73,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView.separated(
           itemCount: items.length,
           itemBuilder: (context, index) {
-            return TodoItem(text: items[index], done: index % 2 == 0);  //Temporary done value to show the two states
+            return TodoItemWidget(TodoItem(items[index], done: index % 2 == 0));  //Temporary done value to show the two states
           },
           separatorBuilder: (context, index) =>
               const Divider(color: Colors.grey, thickness: 1),
