@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'model.dart';
+import 'add_view.dart';
 
 class TodoItemWidget extends StatelessWidget {
   final TodoItem item;
-  const TodoItemWidget(this.item, {super.key});
+  final String appTitle;
+  const TodoItemWidget(this.item, {required this.appTitle, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,20 @@ class TodoItemWidget extends StatelessWidget {
                     },
                   ),
                 ),
-                Expanded(child: Text(item.text, style: textStyle)),
+                Expanded(
+                  child: TextButton(
+                    child: Text(item.text, style: textStyle),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              EditView(appTitle, item: item),
+                        ),
+                      );
+                    },
+                  ),
+                ),
                 IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () {

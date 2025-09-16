@@ -2,11 +2,20 @@ import 'package:flutter/material.dart';
 import 'model.dart';
 import 'package:provider/provider.dart';
 
-class AddView extends StatelessWidget {
+class TextFieldView extends StatelessWidget {
   final String title;
-  String textFieldtext;
-  AddView(this.title, {super.key, this.textFieldtext = ""})
-    : controller = TextEditingController(text: textFieldtext);
+  final String textFieldtext;
+  final String labelText;
+  final String buttonText;
+  final void Function(String text) onSubmitt;
+  TextFieldView(
+    this.title, {
+    required this.labelText,
+    required this.buttonText,
+    required this.onSubmitt,
+    super.key,
+    this.textFieldtext = "",
+  }) : controller = TextEditingController(text: textFieldtext);
   final TextEditingController controller;
 
   @override
@@ -24,7 +33,7 @@ class AddView extends StatelessWidget {
               controller: controller,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "What are you going to do?",
+                labelText: labelText,
               ),
             ),
           ),
@@ -33,10 +42,10 @@ class AddView extends StatelessWidget {
               final String text = controller.text.trim();
               if (text.isEmpty) return;
               controller.clear();
-              context.read<TodoItemsState>().add(TodoItem(text));
+              onSubmitt(text);
             },
             child: Text(
-              "+ Add",
+              buttonText,
               style: Theme.of(
                 context,
               ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -45,5 +54,36 @@ class AddView extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class AddView extends StatelessWidget {
+  final String title;
+  const AddView(this.title, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFieldView(
+      title,
+      labelText: "What are you going to do?",
+      buttonText: "+ Add",
+      onSubmitt: (text) {
+        context.read<TodoItemsState>().add(TodoItem(text));
+      },
+    );
+  }
+}
+
+class EditView extends StatelessWidget {
+  final String title;
+  final TodoItem item;
+  const EditView(this.title, {super.key, required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFieldView(title, textFieldtext: item.text, labelText: "Change ToDo", buttonText: "Edit", onSubmitt: (text) {
+          item.text = text;
+          Navigator.pop(context);
+      },);
   }
 }
