@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.grey, // general primary color
         colorScheme: const ColorScheme.light(
           primary: Colors.grey, // AppBar and primary elements
-          onPrimary: Colors.grey, // text/icons on primary elements
+          onPrimary: Colors.white70, // text/icons on primary elements
           secondary: Colors.black, // accents, buttons
         ),
 
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           shape: CircleBorder(),
         ),
       ),
-      home: const MyHomePage(title: 'TIG3333 TODO'),
+      home: const MyHomePage(title: 'TIG333 TODO'),
     );
   }
 }
