@@ -26,6 +26,7 @@ class TodoItemWidget extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: 10),
@@ -37,24 +38,30 @@ class TodoItemWidget extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: TextButton(
-                    child: Text(item.text, style: textStyle),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EditView(appTitle, item: item),
-                        ),
-                      );
-                    },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        child: Text(item.text, style: textStyle),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EditView(appTitle, item: item),
+                            ),
+                          );
+                        },
+                      ),
+                  
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          context.read<TodoItemsState>().remove(item);
+                        },
+                      ),
+                    ],
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    context.read<TodoItemsState>().remove(item);
-                  },
                 ),
               ],
             ),
