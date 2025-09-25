@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'add_view.dart';
+import 'TextFieldView.dart';
 import 'todo_item.dart';
 import 'popup_menu.dart';
 import 'model.dart';
+import 'package:flutter/services.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key, required this.title});
@@ -12,24 +13,36 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TodoItemsState items = context.watch<TodoItemsState>();
-    List<TodoItem> filteredItems = List.generate(
-      items.length,
-      (index) => items[index],
-    ).where((element) {
-      switch (items.current_filter) {
-        case Filters.all:
-          return true;
-        case Filters.done:
-          return element.done;
-        case Filters.undone:
-          return !element.done;
-      }
 
-    }).toList();
+    List<TodoItem> filteredItems =
+        List.generate(items.length, (index) => items[index]).where((element) {
+          switch (items.current_filter) {
+            case Filters.all:
+              return true;
+            case Filters.done:
+              return element.done;
+            case Filters.undone:
+              return !element.done;
+          }
+        }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: Theme.of(context).textTheme.headlineLarge),
+        title: Column(
+          children: [
+            Text(title, style: Theme.of(context).textTheme.headlineLarge),
+             InkWell(
+      onTap: () => Clipboard.setData(ClipboardData(text: items.connection.apiKey)),
+      child: Text(
+        "Copy API key",
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+          color: Colors.blue,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+    )
+          ],
+        ),
         actions: [PopupMenu()],
       ),
       body: Padding(

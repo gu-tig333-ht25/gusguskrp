@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'model.dart';
 import 'home_page.dart';
+import 'TextFieldView.dart';
+import 'Network.dart';
 
 void main() {
-  TodoItemsState state = TodoItemsState();
-
-  for (int i = 0; i < 10; i++) {
-    state.add(TodoItem("Item nr $i", done: (i % 2 == 0)));
-  }
-
-  runApp(ChangeNotifierProvider(create: (_) => state, child: MyApp()));
+  NetworkConnectionState newtorkState = NetworkConnectionState();
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => newtorkState)],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -18,35 +20,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'TODO APP',
-      theme: ThemeData(
-        // Base colors
-        scaffoldBackgroundColor: Colors.white, // background of pages
-        primaryColor: Colors.grey, // general primary color
-        colorScheme: const ColorScheme.light(
-          primary: Colors.grey, // AppBar and primary elements
-          onPrimary: Colors.white70, // text/icons on primary elements
-          secondary: Colors.black, // accents, buttons
-        ),
+    NetworkConnectionState conection = context.watch<NetworkConnectionState>();
+    Network? n = conection.connection;
+    ThemeData appTheme = ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          primaryColor: Colors.grey,
+          colorScheme: const ColorScheme.light(
+            primary: Colors.grey,
+            onPrimary: Colors.white70,
+            secondary: Colors.black,
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.grey,
+            foregroundColor: Colors.black,
+            centerTitle: true,
+          ),
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: Colors.grey,
+            foregroundColor: Colors.white,
+            iconSize: 50,
+            shape: CircleBorder(),
+          ),
+        );
+    if (n == null) {
+      // No network yet, show connect screen
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: appTheme,
+        title: 'TODO APP',
+        home: ConnectNetwork("https://todoapp-api.apps.k8s.gu.se"),
+      );
+    }
 
-        // AppBar theme
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.grey, // gray banner
-          foregroundColor: Colors.black, // black title & icons
-          centerTitle: true,
-        ),
-
-        // FloatingActionButton theme
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.grey, // black FAB
-          foregroundColor: Colors.white,
-          iconSize: 50,
-          shape: CircleBorder(),
-        ),
+    // Network exists, provide TodoItemsState to the WHOLE app
+    return ChangeNotifierProvider(
+      create: (_) => TodoItemsState(connection: n),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'TODO APP',
+        theme: appTheme,
+        home: MyHomePage(title: 'TIG333 TODO'),
       ),
-      home: MyHomePage(title: 'TIG333 TODO'),
     );
   }
 }
