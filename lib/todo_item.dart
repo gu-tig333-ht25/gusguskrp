@@ -1,36 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'model.dart';
+import 'TextFieldView.dart';
 
-class TodoItem extends StatefulWidget {
-  final String text;
-  final bool done;
-  const TodoItem({super.key, required this.text, this.done = false});
+class TodoItemWidget extends StatelessWidget {
+  final TodoItem item;
+  final String appTitle;
+  const TodoItemWidget(this.item, {required this.appTitle, super.key});
 
-  @override
-  State<TodoItem> createState() => _TodoItemState();
-}
-
-class _TodoItemState extends State<TodoItem> {
   @override
   Widget build(BuildContext context) {
-    Icon completedIcon = widget.done
-        ? const Icon(Icons.check_box_outlined)
-        : const Icon(Icons.check_box_outline_blank);
-    TextStyle? textStyle = Theme.of(context).textTheme.headlineMedium?.copyWith(
-      decoration: widget.done
-          ? TextDecoration.lineThrough
-          : TextDecoration.none,
-    );
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: completedIcon,
-          ),
-          Expanded(child: Text(widget.text, style: textStyle)),
-          Icon(Icons.close),
-        ],
+    return ChangeNotifierProvider.value(
+      value: item,
+      child: Consumer<TodoItem>(
+        builder: (_, item, __) {
+          Icon completedIcon = item.done
+              ? const Icon(Icons.check_box_outlined)
+              : const Icon(Icons.check_box_outline_blank);
+          TextStyle? textStyle = Theme.of(context).textTheme.headlineMedium
+              ?.copyWith(
+                decoration: item.done
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none,
+              );
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: IconButton(
+                    icon: completedIcon,
+                    onPressed: () {
+                      item.done = !item.done;
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        child: Text(item.text, style: textStyle),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EditView(appTitle, item: item),
+                            ),
+                          );
+                        },
+                      ),
+                  
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          context.read<TodoItemsState>().remove(item);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
