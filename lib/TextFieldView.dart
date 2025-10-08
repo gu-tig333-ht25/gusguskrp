@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'model.dart';
 import 'Network.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TextFieldView extends StatelessWidget {
   final String title;
@@ -110,30 +111,48 @@ class ConnectNetwork extends StatelessWidget {
   Widget build(BuildContext context) {
     NetworkConnectionState connection = context.read<NetworkConnectionState>();
 
-    return TextFieldView(
-      title,
-      textFieldtext: "",
-      labelText: "Enter API key",
-      buttonText: "Enter",
-      onSubmitt: (text) {
-        connection.connection = Network(baseUrl: baseUrl, apiKey: text);
-      },
-      preWidgets: [
-        Padding(
-          padding: const EdgeInsets.only(top: 30),
-          child: ElevatedButton(
-            onPressed: () {
-              connection.initialize(baseUrl);
+    return FutureBuilder(
+      future: SharedPreferences.getInstance(),
+      builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          SharedPreferences? sp = snapshot.data;
+          assert (sp != null);
+          //print("api key found: ${sp!.getString("API_KEY") ?? ""}");
+
+          return TextFieldView(
+            title,
+            textFieldtext: sp!.getString("API_KEY") ?? "",
+            labelText: "Enter API key",
+            buttonText: "Enter",
+            onSubmitt: (text) {
+              connection.connection = Network(baseUrl: baseUrl, apiKey: text);
             },
-            child: Text(
-              "Register API key",
-              style: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      ],
+            preWidgets: [
+              Padding(
+                padding: const EdgeInsets.only(top: 30),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await connection.initialize(baseUrl);
+                    await sp.setString("API_KEY", connection.connection!.apiKey);
+                    //print("set api key: ${connection.connection!.apiKey}");
+                  },
+                  child: Text(
+                    "Register API key",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+        return Text("Internal error");
+      },
     );
   }
 }
