@@ -8,7 +8,7 @@ class TodoItem extends ChangeNotifier {
   bool _done;
   String _text;
   TodoItem(String text, this.id, this.network, {bool done = false})
-    : _text = "$text",
+    : _text = text,
       _done = done;
   bool get done => _done;
   set done(bool value) {
@@ -20,13 +20,13 @@ class TodoItem extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get text => "$_text";
+  String get text => _text;
   set text(String value) {
     network.updateTodo(id, value, _done).catchError((e, stack) {
       debugPrint('Error in addTodo: $e');
       debugPrintStack(stackTrace: stack);
     });
-    _text = "$value";
+    _text = value;
     notifyListeners();
   }
 }
@@ -61,7 +61,7 @@ class TodoItemsState extends ChangeNotifier {
   int get length => _items.length;
 
   void add(String text) {
-    print("add() called, connection: ${connection}");
+    print("add() called, connection: $connection");
     connection
         .addTodo(text)
         .then((value) {
