@@ -12,22 +12,26 @@ class TodoItem extends ChangeNotifier {
       _done = done;
   bool get done => _done;
   set done(bool value) {
-    network.updateTodo(id, _text, value).catchError((e, stack) {
+    network.updateTodo(id, _text, value).then((_) {
+      _done = value;
+    notifyListeners();
+    },)
+    .catchError((e, stack) {
       debugPrint('Error in addTodo: $e');
       debugPrintStack(stackTrace: stack);
     });
-    _done = value;
-    notifyListeners();
   }
 
   String get text => _text;
   set text(String value) {
-    network.updateTodo(id, value, _done).catchError((e, stack) {
+    network.updateTodo(id, value, _done).then((_) {
+    _text = value;
+    notifyListeners();
+    },)
+    .catchError((e, stack) {
       debugPrint('Error in addTodo: $e');
       debugPrintStack(stackTrace: stack);
     });
-    _text = value;
-    notifyListeners();
   }
 }
 
